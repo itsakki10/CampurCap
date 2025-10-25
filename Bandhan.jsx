@@ -23,7 +23,7 @@ const MOCK_ALUMNI_DATA = [
 const LOGGED_IN_USER = {
     id: 'student-99',
     name: 'Current Student',
-    avatar: 'https://placehold.co/40x40/1F3A66/ffffff?text=CS' // Deep blue placeholder
+    avatar: 'https://placehold.co/40x40/1F3A66/ffffff?text=CS' 
 };
 
 const DROPDOWN_OPTIONS = {
@@ -37,7 +37,7 @@ const ChatBubble = ({ message, isSender }) => (
     <div className={`flex ${isSender ? 'justify-end' : 'justify-start'} mb-3`}>
         <div className={`max-w-[80%] px-4 py-2 rounded-xl shadow-md transition duration-200 ease-in-out ${
             isSender 
-                ? 'bg-blue-600 text-white rounded-br-none' // Keeping blue for chat bubble contrast
+                ? 'bg-blue-600 text-white rounded-br-none' 
                 : 'bg-gray-200 text-gray-800 rounded-tl-none'
         }`}>
             <p className="text-sm break-words">{message.text}</p>
@@ -114,7 +114,7 @@ const ChatDrawer = ({ targetAlumnus, closeChat, loggedInUser }) => {
                     <div ref={messagesEndRef} />
                 </div>
 
-                {/* Input */}
+           
                 <form onSubmit={handleSend} className="p-4 border-t bg-gray-50">
                     <div className="flex space-x-2">
                         <input
@@ -145,8 +145,7 @@ const AlumniCard = React.memo(({ alumnus, startChat }) => {
         <div className="bg-white p-6 rounded-xl shadow-lg transition duration-300 hover:shadow-xl hover:scale-[1.01] border border-gray-100">
             <div className="flex items-center space-x-4 mb-4 pb-4 border-b border-gray-100">
                 <img 
-                    src={`https://placehold.co/60x60/1F3A66/ffffff?text=${alumnus.name.charAt(0)}`} // Deep blue placeholder
-                    alt={alumnus.name} 
+                    src={`https://placehold.co/60x60/1F3A66/ffffff?text=${alumnus.name.charAt(0)}`} 
                     className="flex-shrink-0 w-16 h-16 rounded-full border-2 border-[#1F3A66]/30"
                     onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/60x60/1F3A66/ffffff?text=Al" }}
                 />
@@ -181,12 +180,12 @@ const AlumniCard = React.memo(({ alumnus, startChat }) => {
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Connect (Chat)
             </button>
-            {/* Future Enhancement: Add "Send Mentorship Request" button */}
+           
         </div>
     );
 });
 
-// --- FILTER DROPDOWN COMPONENT ---
+
 
 const FilterDropdown = ({ title, options, selected, onSelect }) => {
     const [isOpen, setIsOpen] = useState(false);
