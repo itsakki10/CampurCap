@@ -46,7 +46,6 @@ const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/
 
 
 const analyzeImageWithGemini = async (base64Image, prompt) => {
-    // Strip the mime type prefix (e.g., "data:image/jpeg;base64,")
     const [mimePart, dataPart] = base64Image.split(',');
     const mimeType = mimePart.match(/:(.*?);/)[1];
 
@@ -70,7 +69,7 @@ const analyzeImageWithGemini = async (base64Image, prompt) => {
         }
     };
 
-    // Exponential backoff mechanism for API calls
+
     const MAX_RETRIES = 3;
     let lastError = null;
     
@@ -114,7 +113,7 @@ const ActionButton = ({ onClick, children, disabled = false, className = '' }) =
     </button>
 );
 
-// New Navbar Component
+
 const Navbar = ({ setPage }) => (
     <header className="flex justify-between items-center bg-white p-4 rounded-xl shadow-md sticky top-0 z-20 mx-auto max-w-7xl border-b border-gray-100">
         <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setPage('Dashboard')}>
@@ -296,17 +295,15 @@ const SuggestionCard = ({ title, context, suggestion, benefit }) => (
 
 
 const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
-    // Refs for native input elements
+    
     const fileInputRef = useRef(null);
     const cameraInputRef = useRef(null); 
 
     const [imageSrc, setImageSrc] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    // Modified result state to hold the detailed JSON object
     const [result, setResult] = useState(null);
     const [error, setError] = useState(null);
 
-    // Handle file upload/camera capture (they use the same handler now)
     const handleFileChange = (event) => {
         const file = event.target.files[0];
         if (file) {
@@ -316,19 +313,18 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
             };
             reader.readAsDataURL(file);
         }
-        // Reset inputs to allow selecting the same file again
         if (fileInputRef.current) fileInputRef.current.value = null;
         if (cameraInputRef.current) cameraInputRef.current.value = null;
     };
 
-    // Function to trigger the native file chooser for camera
+
     const triggerCamera = () => {
         if (cameraInputRef.current) {
             cameraInputRef.current.click();
         }
     };
 
-    // Core verification logic using Gemini
+
     const handleVerification = async () => {
         if (!imageSrc) return;
 
@@ -336,7 +332,7 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
         setResult(null);
         setError(null);
 
-        // NEW PROMPT: Requesting detailed, structured JSON output
+       
         const prompt = `Analyze this image. First, identify the most relevant eco-action object (must be one of: 'plant', 'dustbin', or 'bottle/plastic'). 
         If it is a plant, provide its potential common name. Then, generate a brief 'context', 'benefit', and 'suggestion' based on the identified object. 
         Return ONLY a single line JSON object with the following exact structure: 
@@ -349,10 +345,10 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
         try {
             const rawResponse = await analyzeImageWithGemini(imageSrc, prompt);
             
-            // Attempt to parse JSON response
+            
             let data = {};
             try {
-                // Clean up any markdown code fences before parsing
+                
                 data = JSON.parse(rawResponse.trim().replace(/```json|```/g, ''));
             } catch (e) {
                 console.error("Failed to parse AI response as JSON:", rawResponse);
@@ -387,7 +383,7 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
                 suggestion: data.suggestion
             };
 
-            // Update user state and store action
+            
             if (pointsEarned > 0) {
                 setUserState(prev => {
                     const newTotalPoints = prev.totalPoints + pointsEarned;
@@ -409,7 +405,7 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
             setError(err.message);
         } finally {
             setIsLoading(false);
-            setImageSrc(null); // Clear image after submission
+            setImageSrc(null); 
         }
     };
 
@@ -443,14 +439,14 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
 
             <div className="flex flex-col items-center space-y-4 mb-6 p-6 border border-gray-100 rounded-xl">
                 
-                {/* Input Options (Modified) */}
+                
                 {!imageSrc && (
                     <div className="w-full space-y-4">
-                        {/* Hidden input to capture video/camera stream */}
+                       
                         <input 
                             type="file" 
                             accept="image/*" 
-                            capture="environment" // Hint to use the rear camera
+                            capture="environment" 
                             ref={cameraInputRef} 
                             onChange={handleFileChange}
                             style={{ display: 'none' }}
@@ -474,7 +470,7 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
                     </div>
                 )}
                 
-                {/* Image Preview & Submission */}
+                
                 {imageSrc && (
                     <div className="w-full text-center p-4 border border-gray-200 rounded-lg">
                         <h4 className="text-lg font-semibold mb-2">Image Preview</h4>
@@ -502,7 +498,6 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
                 )}
             </div>
 
-            {/* Results Display */}
             {(isLoading || result || error) && (
                 <div className="mt-6 p-4 rounded-lg border-2">
                     {isLoading && (
@@ -545,15 +540,15 @@ const ImageVerificationPage = ({ userState, setUserState, setPage }) => {
 
 
 const MissionTrackerPage = ({ userState, setUserState, setPage }) => {
-    const mapRef = useRef(null); // Ref for the map container
-    const mapInstanceRef = useRef(null); // Ref to hold the L.map instance
+    const mapRef = useRef(null); 
+    const mapInstanceRef = useRef(null); 
 
-    const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); // Default to India center
+    const [mapCenter, setMapCenter] = useState([20.5937, 78.9629]); 
     const [currentLocation, setCurrentLocation] = useState(null);
     const [isGpsLoading, setIsGpsLoading] = useState(false);
     const [gpsError, setGpsError] = useState(null);
     
-    // FIX 1: Use useMemo for calculation that depends on props/state to prevent infinite loop
+
     const loadedMissions = useMemo(() => userState.missions
         .filter(m => m.completed && m.location)
         .map(m => ({
@@ -566,11 +561,10 @@ const MissionTrackerPage = ({ userState, setUserState, setPage }) => {
 
   
     useEffect(() => {
-        // --- PURE JS LEAFLET INITIALIZATION ---
-        // Check if L.map is available before attempting to initialize
+        
         if (typeof L !== 'undefined' && typeof L.map === 'function' && mapRef.current) {
             
-            // --- FIX for Leaflet marker assets ---
+            
             if (L.Icon && L.Icon.Default) {
                 delete L.Icon.Default.prototype._getIconUrl;
 
@@ -580,37 +574,36 @@ const MissionTrackerPage = ({ userState, setUserState, setPage }) => {
                     shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
                 });
             }
-            // --- END FIX ---
-
+           
 
             if (mapInstanceRef.current) {
-                // Clear existing map instance if it exists
+                
                 mapInstanceRef.current.remove();
             }
 
             try {
-                 // Determine initial center
+                 
                  const initialCenter = loadedMissions.length > 0 
                     ? [loadedMissions[loadedMissions.length - 1].lat, loadedMissions[loadedMissions.length - 1].lng]
-                    : [20.5937, 78.9629]; // Default to India
+                    : [20.5937, 78.9629]; 
 
-                 // 1. Initialize Map
+                 
                 const map = L.map(mapRef.current).setView(initialCenter, loadedMissions.length > 0 ? 10 : 5);
                 mapInstanceRef.current = map;
 
-                // 2. Add Tile Layer (Map Tiles)
+                
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
                 }).addTo(map);
 
-                // 3. Add Markers for Completed Missions
+               
                 loadedMissions.forEach(mission => {
                     L.marker([mission.lat, mission.lng])
                         .addTo(map)
                         .bindPopup(`<p class="font-semibold">${mission.name}</p><p class="text-xs text-yellow-500">Reward: ${mission.reward} Pts</p>`);
                 });
 
-                // 4. Add Marker for Current GPS Location
+                
                 if (currentLocation) {
                      L.marker([currentLocation.latitude, currentLocation.longitude], {
                         icon: L.divIcon({
@@ -635,8 +628,8 @@ const MissionTrackerPage = ({ userState, setUserState, setPage }) => {
         if (!navigator.geolocation) {
             setGpsError('Geolocation is not supported by your browser.');
             
-            // FALLBACK TO MOCK LOCATION
-            const mockLocation = { latitude: 28.6139, longitude: 77.2090 }; // Mock location (e.g., New Delhi)
+            
+            const mockLocation = { latitude: 28.6139, longitude: 77.2090 }; 
             setCurrentLocation(mockLocation);
             setIsGpsLoading(false);
             callback(mockLocation);
@@ -650,17 +643,17 @@ const MissionTrackerPage = ({ userState, setUserState, setPage }) => {
             (position) => {
                 const { latitude, longitude } = position.coords;
                 const loc = { latitude, longitude };
-                setCurrentLocation(loc); // Update state to trigger map re-render
+                setCurrentLocation(loc); 
                 setIsGpsLoading(false);
                 callback(loc);
             },
             (error) => {
-                // FIX: Log error object instead of just passing it to the console error function.
+        
                 console.error("GPS Error:", error); 
                 setGpsError(`Could not get location. Error: ${error.message || JSON.stringify(error)}. Using mock location for demo.`);
                 setIsGpsLoading(false);
 
-                // FALLBACK TO MOCK LOCATION
+               
                 const mockLocation = { latitude: 28.6139 + Math.random() * 0.1, longitude: 77.2090 + Math.random() * 0.1 }; // Slightly randomized mock
                 setCurrentLocation(mockLocation);
                 callback(mockLocation);
@@ -686,7 +679,7 @@ const MissionTrackerPage = ({ userState, setUserState, setPage }) => {
                     
                     return { ...prev, missions: updatedMissions, totalPoints: newTotalPoints };
                 });
-                // Update completed actions history for user feedback/modal display
+                
                 const newActions = [...userState.completedActions, { 
                     actionType: 'mission_complete', 
                     points: reward, 
@@ -696,7 +689,7 @@ const MissionTrackerPage = ({ userState, setUserState, setPage }) => {
                 }];
                 setUserState(prev => ({ ...prev, completedActions: newActions }));
             } else {
-                // Update completed actions history for user feedback/modal display
+                
                 const newActions = [...userState.completedActions, { 
                     actionType: 'mission_fail', 
                     points: 0, 
@@ -830,10 +823,10 @@ const App = () => {
 
     const Dashboard = ({ userState, setPage }) => (
         <div className="p-4 md:p-8 bg-white rounded-xl shadow-2xl">
-            {/* Landing Page Hero Section (matching new 11.jpg) */}
+            
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                 
-                {/* Left: Text and Buttons */}
+                
                 <div className="py-12">
                     <span className="inline-flex items-center space-x-2 text-sm font-semibold text-green-700 bg-green-100 px-3 py-1 rounded-full mb-6">
                         <Leaf className="w-4 h-4" /> Smart Environmental Learning
@@ -855,7 +848,7 @@ const App = () => {
                             Start Your Eco Journey
                         </button>
                         <button
-                            onClick={() => setPage('Dashboard')} // Placeholder action
+                            onClick={() => setPage('Dashboard')} 
                             className="bg-white text-green-600 border-2 border-green-600 font-semibold py-3 px-8 rounded-full hover:bg-green-50 transition-colors duration-200"
                         >
                             For Educators
@@ -863,7 +856,7 @@ const App = () => {
                     </div>
                 </div>
 
-                {/* Right: Placeholder Image Container (Replaces new 11.jpg illustration) */}
+                
                 <div className="hidden lg:block h-full min-h-[400px] bg-green-50/50 rounded-xl shadow-inner flex items-center justify-center p-8">
                     <p className="text-center text-green-700 font-semibold text-lg">
                         [Illustration Placeholder: Gamified Learning]
@@ -871,7 +864,6 @@ const App = () => {
                 </div>
             </div>
 
-            {/* Metrics Section */}
             <div className="flex flex-wrap justify-between items-center py-6 px-4 -mt-16 sm:-mt-12 mb-12 relative bg-white rounded-lg shadow-xl border-t-4 border-blue-500">
                 <MetricItem count="10K+" label="Active Students" icon={<User className="w-6 h-6 text-blue-500" />} />
                 <MetricItem count="50K+" label="Eco Points Earned" icon={<Zap className="w-6 h-6 text-yellow-500" />} />
@@ -879,7 +871,7 @@ const App = () => {
                 <MetricItem count="35" label="Current Eco-Points" icon={<TrendingUp className="w-6 h-6 text-red-500" />} value={userState.totalPoints} />
             </div>
 
-            {/* How It Works / Feature Cards (Matching new 13.jpg) */}
+            
             <div className="text-center mb-12">
                 <h2 className="text-4xl font-extrabold text-gray-800 mb-2">
                     How It <span className="text-green-600">Works</span>
