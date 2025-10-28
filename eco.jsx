@@ -18,7 +18,7 @@ const INITIAL_USER_STATE = {
         { id: 'm2', name: 'Identify 3 New Plants', completed: false, location: null, reward: 25 },
         { id: 'm3', name: 'Plant a Sapling', completed: false, location: null, reward: 50 },
     ],
-    completedActions: [], // Stores verification and identification history
+    completedActions: [], 
 };
 
 const QUIZ_DATA = [
