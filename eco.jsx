@@ -953,7 +953,7 @@ const App = () => {
             </main>
             
             <footer className="text-center text-gray-500 text-sm mt-8 pb-4">
-                <p>pPresented by Unlock Ed.</p>
+                <p>Presented by Unlock Ed.</p>
             </footer>
         </div>
     );
