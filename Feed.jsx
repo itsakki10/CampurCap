@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
  
-// --- DUMMY DATA ---
+// --- DUMMY DATA --- 
 const initialPosts = [
     {
         id: 1, user: { name: "Aisha Khan", avatar: "A", role: "Student at Green Valley High" }, time: "3 hours ago",
