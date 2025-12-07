@@ -19,7 +19,7 @@
                         'smart-bg-light': '#f8fafc',
                     },
                 }
-            }
+            } 
         }
     </script>
 </head>
