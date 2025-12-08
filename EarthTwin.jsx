@@ -10,7 +10,7 @@ import {
   Flame,
   Sparkles,
 } from "lucide-react";
-
+ 
 import { MapContainer, TileLayer, Circle, CircleMarker } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 
